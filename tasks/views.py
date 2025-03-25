@@ -2,7 +2,7 @@ from django.shortcuts import render, get_object_or_404, redirect
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.decorators import login_required
 from django.db.models import Case, When, Q
-from django.core.paginator import Paginator
+from django.core.paginator import Paginator, EmptyPage
 from django.contrib.auth import logout
 from django.utils import timezone
 from .models import Task
@@ -49,24 +49,30 @@ def task_list(request):
             )
         )
     elif sort_by == 'due_date':
-        tasks = tasks.order_by('due_date')
+        tasks = tasks.order_by('due_date')  # Corrected to use filtered QuerySet
     elif sort_by == 'date':
-        tasks = tasks.order_by('id')  # Assuming `id` corresponds to creation date
+        tasks = tasks.order_by('id')  # Corrected to use filtered QuerySet
+    else:
+        tasks = tasks.order_by('id')  # Default sorting by creation date
 
     # Add pagination logic (10 tasks per page)
     paginator = Paginator(tasks, 10)
-    tasks = paginator.get_page(page_number)
+    try:
+        tasks = paginator.get_page(page_number)
+    except EmptyPage:
+        tasks = paginator.get_page(1)  # Default to the first page if page is invalid
 
     # Pass the current date to the template
     today = timezone.now().date()
+
     # Pass tasks and pagination information to the template
     return render(request, 'tasks/task_list.html', {
         'tasks': tasks,
         'priority': priority,
         'status': status,
         'sort_by': sort_by,
-        'search_query': search_query,  # Pass search query to template
-        'today': today,  # Add this line
+        'search_query': search_query,
+        'today': today,
     })
 
 

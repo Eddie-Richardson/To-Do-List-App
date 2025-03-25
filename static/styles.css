@@ -45,7 +45,7 @@ footer {
     color: white;
     text-align: center;
     padding: 10px;
-    position: fixed;
+    position: relative;
     bottom: 0;
     width: 100%;
 }
@@ -141,4 +141,39 @@ button:hover {
 .pagination a:hover {
     text-decoration: underline;
     font-weight: bold;
+}
+
+/* Header Styling */
+header {
+    background-color: #0056b3; /* Blue background for the header */
+    padding: 10px;
+}
+
+header nav ul {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    justify-content: center; /* Centers the buttons horizontally */
+    align-items: center;     /* Aligns items vertically (optional) */
+    gap: 10px;               /* Adds space between buttons */
+}
+
+header nav ul li {
+    display: inline;
+}
+
+header nav ul li a {
+    color: Blue; /* Default text color for links */
+    text-decoration: none;
+    padding: 10px 15px;
+    border: 1px solid white; /* Optional border for button-like appearance */
+    border-radius: 5px;
+    background-color: transparent; /* No background color by default */
+    font-weight: bold;
+}
+
+header nav ul li a:hover {
+    background-color: white; /* Background becomes white on hover */
+    color: #0056b3;          /* Text changes to blue on hover */
 }

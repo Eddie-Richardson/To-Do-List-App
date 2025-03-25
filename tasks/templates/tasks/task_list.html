@@ -29,7 +29,7 @@
 
 <ul>
     {% for task in tasks %}
-        <li>
+        <li class="{% if task.due_date and task.due_date < today %}overdue{% endif %}">
             <strong>{{ task.title }}</strong> - {{ task.description }}
             {% if task.due_date %}
                 <span>(Due: {{ task.due_date }})</span>
