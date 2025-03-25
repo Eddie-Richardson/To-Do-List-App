@@ -8,5 +8,5 @@ urlpatterns = [
     path('delete/<int:task_id>/', views.delete_task, name='delete-task'),  # Delete task route
     path('register/', views.register, name='register'),  # Registration page route
     path('profile/', views.profile, name='profile'),  # Profile page route
-    path('logout/', views.custom_logout, name='logout')
+    path('logout/', views.custom_logout, name='logout') # Logout page route
 ]

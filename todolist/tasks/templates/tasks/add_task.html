@@ -13,6 +13,13 @@
         <label for="description">Description:</label>
         <textarea id="description" name="description"></textarea><br><br>
 
+        <label for="priority">Priority:</label>
+        <select name="priority" id="priority">
+            <option value="High">High</option>
+            <option value="Medium" selected>Medium</option>
+            <option value="Low">Low</option>
+        </select>
+
         <button type="submit">Add Task</button>
     </form>
     <a href="{% url 'task-list' %}">Back to Task List</a>

@@ -2,13 +2,41 @@
 <html>
 <head>
     <title>Task List</title>
+    <style>
+        /* Add styles for priorities */
+        .priority-high {
+            color: red;
+            font-weight: bold;
+        }
+        .priority-medium {
+            color: orange;
+        }
+        .priority-low {
+            color: green;
+        }
+    </style>
 </head>
 <body>
     <h1>My To-Do List</h1>
+    <a href="{% url 'profile' %}">Profile</a><br>
+    <a href="{% url 'add-task' %}">Add Task</a><br>
+    <h2>Filter Tasks:</h2>
+    <a href="?status=completed">Show Completed</a>
+    <a href="?status=incomplete">Show Incomplete</a>
+    <a href="?priority=High">High Priority</a>
+    <a href="?priority=Medium">Medium Priority</a>
+    <a href="?priority=Low">Low Priority</a>
+    <a href="?">Show All</a>
+
+    <h2>Sort Tasks:</h2>
+    <a href="?sort=title">Sort by Title</a>
+    <a href="?sort=priority">Sort by Priority</a>
+    <a href="?sort=date">Sort by Creation Date</a>
     <ul>
         {% for task in tasks %}
             <li>
                 <strong>{{ task.title }}</strong> - {{ task.description }}
+                <span class="priority-{{ task.priority|lower }}">(Priority: {{ task.priority }})</span>
                 {% if task.completed %}
                     <span style="color: green;">(Completed)</span>
                 {% else %}
@@ -16,9 +44,20 @@
                 {% endif %}
                 <a href="{% url 'edit-task' task.id %}">Edit</a> <!-- Link to edit page -->
                 <a href="{% url 'delete-task' task.id %}">Delete</a> <!-- Link to delete task -->
-        </li>
             </li>
         {% endfor %}
     </ul>
+    <!-- Pagination controls -->
+    <div class="pagination">
+        {% if tasks.has_previous %}
+            <a href="?page={{ tasks.previous_page_number }}{% if priority %}&priority={{ priority }}{% endif %}{% if status %}&status={{ status }}{% endif %}{% if sort_by %}&sort={{ sort_by }}{% endif %}">Previous</a>
+        {% endif %}
+
+        <span>Page {{ tasks.number }} of {{ tasks.paginator.num_pages }}</span>
+
+        {% if tasks.has_next %}
+            <a href="?page={{ tasks.next_page_number }}{% if priority %}&priority={{ priority }}{% endif %}{% if status %}&status={{ status }}{% endif %}{% if sort_by %}&sort={{ sort_by }}{% endif %}">Next</a>
+        {% endif %}
+    </div>
 </body>
 </html>
