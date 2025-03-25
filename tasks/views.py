@@ -1,9 +1,10 @@
 from django.shortcuts import render, get_object_or_404, redirect
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.decorators import login_required
-from django.db.models import Case, When
+from django.db.models import Case, When, Q
 from django.core.paginator import Paginator
 from django.contrib.auth import logout
+from django.utils import timezone
 from .models import Task
 
 # Define the List Task
@@ -13,16 +14,15 @@ def task_list(request):
     priority = request.GET.get('priority')
     status = request.GET.get('status')
     sort_by = request.GET.get('sort')
+    search_query = request.GET.get('search')  # New search query parameter
     page_number = request.GET.get('page')  # Get the current page number
 
     # Start with tasks belonging to the logged-in user
     tasks = Task.objects.filter(user=request.user)
 
-    # Apply priority filter
-    if priority:
+    # Apply priority filter (if valid)
+    if priority in ['High', 'Medium', 'Low']:
         tasks = tasks.filter(priority=priority)
-    if priority not in ['High', 'Medium', 'Low', None]:
-        tasks = tasks.filter(priority='Medium')  # Default fallback
 
     # Apply completion status filter
     if status == 'completed':
@@ -30,26 +30,44 @@ def task_list(request):
     elif status == 'incomplete':
         tasks = tasks.filter(completed=False)
 
-    # Apply sorting
+    # Apply search filter
+    if search_query:
+        tasks = tasks.filter(
+            Q(title__icontains=search_query) | Q(description__icontains=search_query)
+        )
+
+    # Apply sorting to the already filtered tasks
     if sort_by == 'title':
         tasks = tasks.order_by('title')
     elif sort_by == 'priority':
         tasks = tasks.order_by(
             Case(
+                When(priority='None', then=0),
                 When(priority='High', then=1),
                 When(priority='Medium', then=2),
                 When(priority='Low', then=3),
             )
         )
-    if not sort_by:
-        tasks = tasks.order_by('id')  # Default sorting by creation date
+    elif sort_by == 'due_date':
+        tasks = tasks.order_by('due_date')
+    elif sort_by == 'date':
+        tasks = tasks.order_by('id')  # Assuming `id` corresponds to creation date
 
     # Add pagination logic (10 tasks per page)
     paginator = Paginator(tasks, 10)
     tasks = paginator.get_page(page_number)
 
+    # Pass the current date to the template
+    today = timezone.now().date()
     # Pass tasks and pagination information to the template
-    return render(request, 'tasks/task_list.html', {'tasks': tasks})
+    return render(request, 'tasks/task_list.html', {
+        'tasks': tasks,
+        'priority': priority,
+        'status': status,
+        'sort_by': sort_by,
+        'search_query': search_query,  # Pass search query to template
+        'today': today,  # Add this line
+    })
 
 
 # Define the Add Task
@@ -59,7 +77,8 @@ def add_task(request):
         title = request.POST.get('title')  # Get the title from the form
         description = request.POST.get('description')  # Get the description from the form
         priority = request.POST.get('priority')  # Get priority from the form
-        Task.objects.create(user=request.user, title=title, description=description, completed=False, priority=priority)  # Save to the database
+        due_date = request.POST.get('due_date')  # Retrieve due date from the form
+        Task.objects.create(user=request.user, title=title, description=description, completed=False, priority=priority, due_date=due_date)  # Save to the database
         return redirect('task-list')  # Redirect to the task list page
     return render(request, 'tasks/add_task.html')  # Render the form template
 
@@ -73,6 +92,7 @@ def edit_task(request, task_id):
         task.title = request.POST.get('title')  # Update title
         task.description = request.POST.get('description')  # Update description
         task.priority = request.POST.get('priority')  # Update priority
+        task.due_date = request.POST.get('due_date')  # Update due date
         task.completed = 'completed' in request.POST  # Update completion status
         task.save()  # Save changes to the database
         return redirect('task-list')  # Redirect to task list after saving

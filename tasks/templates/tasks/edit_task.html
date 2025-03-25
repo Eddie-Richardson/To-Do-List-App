@@ -1,10 +1,9 @@
-<!DOCTYPE html>
-<html>
-<head>
-    <title>Edit Task</title>
-</head>
-<body>
-    <h1>Edit Task</h1>
+{% extends 'base.html' %}
+
+{% block title %}Edit Task{% endblock %}
+
+{% block content %}
+    <h2>Edit Task</h2>
     <form method="POST">
         {% csrf_token %} <!-- Security token for forms -->
         <label for="title">Title:</label>
@@ -18,15 +17,18 @@
             <option value="High">High</option>
             <option value="Medium" selected>Medium</option>
             <option value="Low">Low</option>
+            <option value="None">None</option>
         </select>
 
         <label>
-            <input type="checkbox" name="completed" {% if task.completed %}checked{% endif %}>
-            Completed
+            <label for="due_date">Due Date:</label>
+    <input type="date" name="due_date" id="due_date" value="{{ task.due_date }}">
+
+    <label for="completed">Completed:</label>
+    <input type="checkbox" name="completed" id="completed" {% if task.completed %}checked{% endif %}>
         </label><br><br>
 
         <button type="submit">Save Changes</button>
     </form>
     <a href="{% url 'task-list' %}">Back to Task List</a>
-</body>
-</html>
+{% endblock %}

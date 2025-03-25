@@ -1,9 +1,8 @@
-<!DOCTYPE html>
-<html>
-<head>
-    <title>Add Task</title>
-</head>
-<body>
+{% extends 'base.html' %}
+
+{% block title %}Add Task{% endblock %}
+
+{% block content %}
     <h1>Add a New Task</h1>
     <form method="POST">
         {% csrf_token %} <!-- Security token for forms -->
@@ -18,10 +17,13 @@
             <option value="High">High</option>
             <option value="Medium" selected>Medium</option>
             <option value="Low">Low</option>
+            <option value="None">None</option>
         </select>
+
+         <label for="due_date">Due Date:</label>
+        <input type="date" name="due_date" id="due_date"> <!-- HTML5 date picker -->
 
         <button type="submit">Add Task</button>
     </form>
     <a href="{% url 'task-list' %}">Back to Task List</a>
-</body>
-</html>
+{% endblock %}

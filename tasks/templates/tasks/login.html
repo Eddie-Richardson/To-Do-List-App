@@ -1,14 +1,12 @@
-<!DOCTYPE html>
-<html>
-<head>
-    <title>Login</title>
-</head>
-<body>
-    <h1>Log in</h1>
+{% extends 'base.html' %}
+
+{% block title %}Login{% endblock %}
+
+{% block content %}
+    <h2>Log in</h2>
     <form method="POST">
         {% csrf_token %}
         {{ form.as_p }}  <!-- Render the login form -->
         <button type="submit">Log In</button>
     </form>
-</body>
-</html>
+{% endblock %}

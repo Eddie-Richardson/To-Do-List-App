@@ -1,0 +1,53 @@
+{% extends 'base.html' %}
+
+{% block title %}Task List{% endblock %}
+
+{% block content %}
+<h1>My To-Do List</h1>
+<a href="{% url 'profile' %}">Profile</a><br>
+<a href="{% url 'add-task' %}">Add Task</a><br>
+
+<h2>Search Tasks:</h2>
+<form method="get" action="">
+    <input type="text" name="search" placeholder="Search by title or description" value="{{ search_query }}">
+    <button type="submit">Search</button>
+</form>
+
+<h2>Filter Tasks:</h2>
+<a href="?status=completed">Show Completed</a>
+<a href="?status=incomplete">Show Incomplete</a>
+<a href="?priority=High">High Priority</a>
+<a href="?priority=Medium">Medium Priority</a>
+<a href="?priority=Low">Low Priority</a>
+<a href="?">Show All</a>
+
+<h2>Sort Tasks:</h2>
+<a href="?priority={{ priority }}&status={{ status }}&sort=title">Sort by Title</a>
+<a href="?priority={{ priority }}&status={{ status }}&sort=priority">Sort by Priority</a>
+<a href="?priority={{ priority }}&status={{ status }}&sort=due_date">Sort by Due Date</a>
+<a href="?priority={{ priority }}&status={{ status }}&sort=date">Sort by Creation Date</a>
+
+<ul>
+    {% for task in tasks %}
+        <li>
+            <strong>{{ task.title }}</strong> - {{ task.description }}
+            {% if task.due_date %}
+                <span>(Due: {{ task.due_date }})</span>
+            {% endif %}
+            <span class="priority-{{ task.priority|lower }}">(Priority: {{ task.priority }})</span>
+            <a href="{% url 'edit-task' task.id %}">Edit</a>
+            <a href="{% url 'delete-task' task.id %}">Delete</a>
+        </li>
+    {% endfor %}
+</ul>
+
+<div class="pagination">
+    {% if tasks.has_previous %}
+        <a href="?page={{ tasks.previous_page_number }}{% if priority %}&priority={{ priority }}{% endif %}{% if status %}&status={{ status }}{% endif %}{% if sort_by %}&sort={{ sort_by }}{% endif %}">Previous</a>
+    {% endif %}
+    <span>Page {{ tasks.number }} of {{ tasks.paginator.num_pages }}</span>
+    {% if tasks.has_next %}
+        <a href="?page={{ tasks.next_page_number }}{% if priority %}&priority={{ priority }}{% endif %}{% if status %}&status={{ status }}{% endif %}{% if sort_by %}&sort={{ sort_by }}{% endif %}">Next</a>
+    {% endif %}
+</div>
+{% endblock %}
