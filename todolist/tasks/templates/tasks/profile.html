@@ -1,0 +1,14 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>User Profile</title>
+</head>
+<body>
+    <h1>Welcome, {{ user.username }}</h1>
+    <p>Email: {{ user.email }}</p>
+    <p>Date Joined: {{ user.date_joined }}</p>
+
+    <a href="{% url 'task-list' %}">View Tasks</a><br>
+    <a href="{% url 'logout' %}">Log Out</a>
+</body>
+</html>

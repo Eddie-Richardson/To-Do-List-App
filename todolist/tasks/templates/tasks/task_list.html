@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Task List</title>
+</head>
+<body>
+    <h1>My To-Do List</h1>
+    <ul>
+        {% for task in tasks %}
+            <li>
+                <strong>{{ task.title }}</strong> - {{ task.description }}
+                {% if task.completed %}
+                    <span style="color: green;">(Completed)</span>
+                {% else %}
+                    <span style="color: red;">(Not Completed)</span>
+                {% endif %}
+                <a href="{% url 'edit-task' task.id %}">Edit</a> <!-- Link to edit page -->
+                <a href="{% url 'delete-task' task.id %}">Delete</a> <!-- Link to delete task -->
+        </li>
+            </li>
+        {% endfor %}
+    </ul>
+</body>
+</html>
